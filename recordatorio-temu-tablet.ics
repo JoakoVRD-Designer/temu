@@ -1,0 +1,40 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Recordatorio Temu//ES
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:temu-toma-tu-ganga-20261025@recordatorio
+DTSTAMP:20261024T180000Z
+SEQUENCE:1
+DTSTART:20261025T205500
+DTEND:20261025T210500
+SUMMARY:Temu: Toma tu ganga - Tablet Teclast P50 a $0 (21:00)
+DESCRIPTION:REGLA DE ORO: lo ideal es total $0. Máximo aceptable: $5.000 p
+ esos chilenos (aprox. US$5). Si el total supera $5.000 (por ejemplo\, apar
+ ece el precio de la tablet\, $144.452): NO pagues\, cancela.\n\nANTES:\n- 
+ Confirmar que estás inscrito (botón Reservar/Recordarme en la promoción
+ \; revisar Historial).\n- Leer la pestaña Reglas (¿cobran envío? ¿pedi
+ do mínimo? ¿invitar amigos?).\n- Dirección y método de pago ya guardad
+ os en la app de Temu.\n- Vaciar el carrito para que nada más se cuele en 
+ la orden.\n\n20:55:\n- Teléfono cargado y con Wi-Fi estable.\n- Abrir Tem
+ u\, buscar "Flash 99" y entrar a "Toma tu ganga".\n- Cerrar avisos tipo "a
+ rtículos casi agotados".\n\n21:00:\n- Tocar Reservar/Comprar apenas cambi
+ e el botón.\n- En el pago: la orden debe tener SOLO la tablet y el total 
+ debe estar entre $0 y $5.000.\n- Si cuadra\, confirmar. Si no\, cancelar.\
+ n\nNunca compartas tu contraseña de Temu ni los datos de tu tarjeta con n
+ adie.
+CLASS:PRIVATE
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Temu en 15 min: carga el teléfono\, Wi-Fi\, revisa que estés 
+ inscrito
+TRIGGER:-PT15M
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Abre Temu ya: busca Flash 99. Total máximo $5.000
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

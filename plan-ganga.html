@@ -1,0 +1,307 @@
+<title>Plan Ganga</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: una columna angosta, como una boleta en el teléfono. Arriba la cuenta regresiva y la regla del total; después hoy, mañana, plan B y la rutina de regalos. */
+:root {
+  --bg: #EDF0F5;
+  --surface: #FFFFFF;
+  --paper: #FFFEFA;
+  --ink: #131A2B;
+  --muted: #566176;
+  --line: #D3D9E3;
+  --accent: #2C47D4;
+  --accent-soft: #E4E9FF;
+  --ok: #17784A;
+  --ok-bg: #E1F2E8;
+  --stop: #B3261E;
+  --stop-bg: #FBE7E5;
+  --warn: #7A5200;
+  --warn-bg: #FFF1CF;
+  --f-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1220; --surface: #151C2C; --paper: #1A2235; --ink: #E6EBF4; --muted: #9BA6BC; --line: #2A3448;
+    --accent: #93A5FF; --accent-soft: #1E2852;
+    --ok: #62D39C; --ok-bg: #112B1E; --stop: #FF8D80; --stop-bg: #3A1613; --warn: #F3C766; --warn-bg: #2F240B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1220; --surface: #151C2C; --paper: #1A2235; --ink: #E6EBF4; --muted: #9BA6BC; --line: #2A3448;
+  --accent: #93A5FF; --accent-soft: #1E2852;
+  --ok: #62D39C; --ok-bg: #112B1E; --stop: #FF8D80; --stop-bg: #3A1613; --warn: #F3C766; --warn-bg: #2F240B;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+.wrap {
+  max-width: 620px; margin: 0 auto; display: grid; gap: 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 56px;
+}
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.08; }
+h1 { font-size: clamp(2.4rem, 10vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); max-width: 60ch; }
+.fine { color: var(--muted); font-size: .85rem; max-width: 62ch; }
+section, header, footer { display: grid; gap: 12px; min-width: 0; }
+
+/* Cuenta regresiva */
+.count { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; gap: 14px; }
+.clock { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.clock div { display: grid; justify-items: center; gap: 4px; padding: 12px 4px 10px; border-radius: 12px; background: var(--bg); }
+.clock span { font-family: var(--f-mono); font-weight: 600; font-size: clamp(1.8rem, 9vw, 2.6rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.clock small { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.phase { justify-self: start; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.phase[data-state="warn"] { background: var(--warn-bg); color: var(--warn); }
+.phase[data-state="go"] { background: var(--ok-bg); color: var(--ok); }
+.phase[data-state="done"] { background: var(--bg); color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .phase[data-state="go"] { animation: pulse .9s ease-in-out infinite alternate; }
+}
+@keyframes pulse { from { opacity: 1; } to { opacity: .55; } }
+
+/* Boleta: la regla del total */
+.ticket { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 6px 18px 10px; font-family: var(--f-mono); }
+.ticket-head { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 2px dashed var(--line); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ticket .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; }
+.ticket .row + .row { border-top: 1px dashed var(--line); }
+.ticket dt { font-variant-numeric: tabular-nums; min-width: 0; }
+.ticket dd { margin: 0; }
+.v { display: inline-block; font-weight: 600; font-size: .85rem; padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
+.v.ok { background: var(--ok-bg); color: var(--ok); }
+.v.stop { background: var(--stop-bg); color: var(--stop); }
+
+/* Listas para marcar */
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.tally { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.checks { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.checks li + li { border-top: 1px solid var(--line); }
+.checks label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 16px; cursor: pointer; }
+.steps label { grid-template-columns: auto 3.4rem minmax(0, 1fr); }
+.checks input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--accent); cursor: pointer; }
+.checks time, .checks .when { font-family: var(--f-mono); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent); padding-top: 1px; }
+.checks input:checked ~ span:last-child { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+.note { padding: 12px 14px; border-radius: 12px; font-size: .95rem; }
+.note.warn { background: var(--warn-bg); color: var(--warn); }
+
+/* Plan B */
+.offers { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.offers li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; }
+.offers li + li { border-top: 1px solid var(--line); }
+.offers li.pick { background: var(--ok-bg); }
+.o-name { font-weight: 700; }
+.o-spec { color: var(--muted); font-size: .875rem; }
+.o-price { display: grid; justify-items: end; gap: 2px; text-align: right; }
+.price { font-family: var(--f-mono); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.store { font-size: .8rem; color: var(--muted); }
+.chip { display: inline-block; font-family: var(--f-mono); font-size: .66rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--ok); color: var(--surface); vertical-align: 2px; margin-left: 4px; white-space: nowrap; }
+.chip.ref { background: var(--line); color: var(--ink); }
+
+/* Listas simples */
+.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 10px; max-width: 62ch; }
+.stops li::marker { color: var(--stop); }
+.src { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; font-size: .9rem; }
+footer { border-top: 1px solid var(--line); padding-top: 20px; }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Temu · Toma tu ganga · Chile</p>
+    <h1>Plan Ganga</h1>
+    <p class="lede">Tablet Teclast P50 a $0. Hay una sola unidad y gana quien llega primero.</p>
+  </header>
+
+  <section class="count" aria-labelledby="t-count">
+    <p class="eyebrow" id="t-count">Domingo 25 de octubre · 21:00 hora de Chile</p>
+    <div class="clock" role="timer" aria-live="off">
+      <div><span id="cd-d">–</span><small>días</small></div>
+      <div><span id="cd-h">–</span><small>horas</small></div>
+      <div><span id="cd-m">–</span><small>min</small></div>
+      <div><span id="cd-s">–</span><small>seg</small></div>
+    </div>
+    <p class="phase" id="phase" data-state="idle">Falta para que parta la oferta</p>
+  </section>
+
+  <section aria-labelledby="t-rule">
+    <h2 id="t-rule">Mira el total antes de pagar</h2>
+    <dl class="ticket">
+      <div class="ticket-head"><span>Total a pagar</span><span>CLP</span></div>
+      <div class="row"><dt>$0</dt><dd><span class="v ok">Confirma</span></dd></div>
+      <div class="row"><dt>Hasta $5.000</dt><dd><span class="v ok">Confirma</span></dd></div>
+      <div class="row"><dt>Más de $5.000</dt><dd><span class="v stop">Cancela</span></dd></div>
+      <div class="row"><dt>Ej.: $144.452</dt><dd><span class="v stop">Cancela</span></dd></div>
+    </dl>
+    <p class="fine">La orden debe tener solo la tablet. $5.000 son unos US$5.</p>
+  </section>
+
+  <section aria-labelledby="t-hoy">
+    <div class="head"><h2 id="t-hoy">Hoy</h2><span class="tally" data-for="hoy">0 de 6</span></div>
+    <ul class="checks" data-list="hoy">
+      <li><label><input type="checkbox" id="h1" data-k="h1"><span><b>Reserva tu cupo.</b> Toca "Reservar" o "Recordarme" en Toma tu ganga. Sin esto no participas.</span></label></li>
+      <li><label><input type="checkbox" id="h2" data-k="h2"><span><b>Lee "Reglas".</b> ¿Es solo para usuarios nuevos? ¿Cobran envío? ¿Piden un pedido mínimo?</span></label></li>
+      <li><label><input type="checkbox" id="h3" data-k="h3"><span>Deja guardadas tu dirección y tu forma de pago en la app.</span></label></li>
+      <li><label><input type="checkbox" id="h4" data-k="h4"><span>Vacía el carrito, para que no se cuele nada más en la orden.</span></label></li>
+      <li><label><input type="checkbox" id="h5" data-k="h5"><span>Actualiza la app de Temu.</span></label></li>
+      <li><label><input type="checkbox" id="h6" data-k="h6"><span>Agrega a tu calendario el recordatorio (.ics) que te mandé en el chat.</span></label></li>
+    </ul>
+    <p class="note warn">Ojo: otras ofertas a $0 de Temu en Chile se anunciaron solo para usuarios nuevos. Si "Reglas" dice eso y tu cuenta no es nueva, no la vas a poder ganar.</p>
+  </section>
+
+  <section aria-labelledby="t-man">
+    <div class="head"><h2 id="t-man">Mañana, paso a paso</h2><span class="tally" data-for="man">0 de 6</span></div>
+    <ol class="checks steps" data-list="man">
+      <li><label><input type="checkbox" id="m1" data-k="m1"><time datetime="2026-10-25T20:40-03:00">20:40</time><span>Suena el calendario. Carga el teléfono y cierra las otras apps.</span></label></li>
+      <li><label><input type="checkbox" id="m2" data-k="m2"><time datetime="2026-10-25T20:45-03:00">20:45</time><span>Te escribo en el chat de Claude con el resumen final.</span></label></li>
+      <li><label><input type="checkbox" id="m3" data-k="m3"><time datetime="2026-10-25T20:55-03:00">20:55</time><span>Conéctate a un Wi-Fi estable. Tu 4G tenía poca señal.</span></label></li>
+      <li><label><input type="checkbox" id="m4" data-k="m4"><time datetime="2026-10-25T20:57-03:00">20:57</time><span>Abre Temu, busca "Flash 99" y entra a Toma tu ganga. Quédate en esa pantalla.</span></label></li>
+      <li><label><input type="checkbox" id="m5" data-k="m5"><time datetime="2026-10-25T21:00-03:00">21:00</time><span>Toca "Reservar" o "Comprar" apenas cambie el botón. Si no cambia en 1 o 2 segundos, actualiza una sola vez.</span></label></li>
+      <li><label><input type="checkbox" id="m6" data-k="m6"><span class="when">Pago</span><span>Solo la tablet y un total de $0 a $5.000: confirma. Si no, cancela.</span></label></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="t-b">
+    <h2 id="t-b">Plan B si no sale</h2>
+    <p class="lede">La Redmi Pad 2 de 64 GB cuesta menos que la Teclast en Temu y tiene una pantalla mucho más nítida, más batería y garantía en Chile. Si necesitas más espacio, la de 128 GB.</p>
+    <ul class="offers">
+      <li>
+        <div><p class="o-name">Samsung Galaxy Tab A11</p><p class="o-spec">8,7" · 1340×800 · 64 GB · 5.100 mAh</p></div>
+        <div class="o-price"><span class="price">$129.990</span><span class="store">Hites</span></div>
+      </li>
+      <li class="pick">
+        <div><p class="o-name">Xiaomi Redmi Pad 2 <span class="chip">Recomendada</span></p><p class="o-spec">11" · 2560×1600 · 64 GB · 9.000 mAh</p></div>
+        <div class="o-price"><span class="price">$139.990</span><span class="store">Ripley · Paris</span></div>
+      </li>
+      <li>
+        <div><p class="o-name">Teclast P50 <span class="chip ref">La de la oferta</span></p><p class="o-spec">11" · 1280×800 · 90 Hz · 128 GB · 8.000 mAh</p></div>
+        <div class="o-price"><span class="price">$144.452</span><span class="store">Temu</span></div>
+      </li>
+      <li>
+        <div><p class="o-name">Xiaomi Redmi Pad 2</p><p class="o-spec">11" · 2560×1600 · 128 GB · 9.000 mAh</p></div>
+        <div class="o-price"><span class="price">$169.990</span><span class="store">La Polar</span></div>
+      </li>
+      <li>
+        <div><p class="o-name">Honor Pad X8a</p><p class="o-spec">11" · Snapdragon 680 · 128 GB</p></div>
+        <div class="o-price"><span class="price">$169.990</span><span class="store">Ripley</span></div>
+      </li>
+      <li>
+        <div><p class="o-name">Samsung Galaxy Tab A11+</p><p class="o-spec">11" · 1920×1200 · 90 Hz · 128 GB · 7.040 mAh</p></div>
+        <div class="o-price"><span class="price">$199.990</span><span class="store">Mercado Libre</span></div>
+      </li>
+    </ul>
+    <p class="fine">Precios al 24 de octubre de 2026, sin tarjeta de tienda. Con tarjeta Lider BCI, en Lider: Redmi Pad 2 de 128 GB a $129.990 y Galaxy Tab A11 a $109.990. Confirma el precio final antes de comprar.</p>
+  </section>
+
+  <section aria-labelledby="t-free">
+    <h2 id="t-free">Rutina para cosas gratis</h2>
+    <p class="lede">Cinco minutos al día. Lo realista son cosas chicas; una tablet gratis es la excepción.</p>
+    <ul class="plain">
+      <li><b>Juegos de la app.</b> En "Tú", entra a "Gana créditos o regalos gratis" y elige los que no piden invitar a nadie.</li>
+      <li><b>Referidos.</b> Comparte tu enlace solo con gente que no tenga Temu y la quiera bajar. Suele haber un plazo de 24 horas.</li>
+      <li><b>Eventos a $0.</b> Reserva todos los que veas y activa sus recordatorios.</li>
+      <li><b>Cupones y créditos.</b> Juntos, a veces dejan algo casi en $0.</li>
+      <li><b>Barra en 99 %.</b> Si lleva días sin moverse, déjala.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="t-never">
+    <h2 id="t-never">Nunca</h2>
+    <ul class="plain stops">
+      <li>Pagar para "desbloquear" un premio.</li>
+      <li>Usar códigos "secretos" de TikTok o enlaces que llegan por WhatsApp.</li>
+      <li>Usar bots o auto-clickers: Temu puede anular el pedido o bloquear la cuenta.</li>
+      <li>Darle tu contraseña o los datos de tu tarjeta a alguien.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p class="eyebrow">Fuentes</p>
+    <ul class="src">
+      <li><a href="https://pin2pin.cl/tablets" target="_blank" rel="noopener">pin2pin.cl: precios de tablets en Chile</a></li>
+      <li><a href="https://guiadetech.cl/mejores/mejores-tablets-chile" target="_blank" rel="noopener">Guía de Tech: mejores tablets en Chile 2026</a></li>
+      <li><a href="https://www.notebookcheck.org/Se-lanza-al-mercado-una-tableta-Teclast-asequible-con-ranura-para-tarjetas-microSD-y-diseno-delgado.1347343.0.html" target="_blank" rel="noopener">Notebookcheck: Teclast P50 2026</a></li>
+      <li><a href="https://www.nacion.com/tecnologia/como-obtener-regalos-gratis-en-temu-sin-invitar/HLEM7R2GD5B4PCHVXKVLY32Y4A/story/" target="_blank" rel="noopener">La Nación: regalos de Temu sin invitar</a></li>
+      <li><a href="https://www.enter.co/chips-bits/apps-software/los-regalos-de-temu-son-reales-o-una-estrategia-de-marketing-te-contamos-si-es-posible-recibir-uno" target="_blank" rel="noopener">Enter.co: ¿los regalos de Temu son reales?</a></li>
+      <li><a href="https://www.tiktok.com/discover/como-funciona-ganga-flash-de-temu" target="_blank" rel="noopener">TikTok: publicaciones sobre Ganga Flash</a></li>
+    </ul>
+    <p class="fine">Página personal de apoyo. No es de Temu ni de Teclast.</p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var target = Date.parse('2026-10-25T21:00:00-03:00');
+  var prep = Date.parse('2026-10-25T20:45:00-03:00');
+  var end = Date.parse('2026-10-25T21:15:00-03:00');
+  var timer;
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function setClock(d, h, m, s) {
+    $('cd-d').textContent = d;
+    $('cd-h').textContent = pad(h);
+    $('cd-m').textContent = pad(m);
+    $('cd-s').textContent = pad(s);
+  }
+  function tick() {
+    var now = Date.now();
+    var left = target - now;
+    var phase = $('phase');
+    if (left > 0) {
+      var s = Math.floor(left / 1000);
+      setClock(Math.floor(s / 86400), Math.floor(s % 86400 / 3600), Math.floor(s % 3600 / 60), s % 60);
+      if (now >= prep) {
+        phase.dataset.state = 'warn';
+        phase.textContent = 'Prepárate: entra a Toma tu ganga y quédate ahí';
+      } else {
+        phase.dataset.state = 'idle';
+        phase.textContent = 'Falta para que parta la oferta';
+      }
+    } else {
+      setClock(0, 0, 0, 0);
+      if (now < end) {
+        phase.dataset.state = 'go';
+        phase.textContent = '¡Ahora! Toca Reservar o Comprar';
+      } else {
+        phase.dataset.state = 'done';
+        phase.textContent = 'La oferta ya partió. Si no salió, mira el plan B.';
+        clearInterval(timer);
+      }
+    }
+  }
+  tick();
+  timer = setInterval(tick, 1000);
+
+  var KEY = 'plan-ganga-v1';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  function tally() {
+    document.querySelectorAll('[data-list]').forEach(function (list) {
+      var boxes = list.querySelectorAll('input[type=checkbox]');
+      var done = 0;
+      boxes.forEach(function (b) { if (b.checked) done++; });
+      var t = document.querySelector('.tally[data-for="' + list.dataset.list + '"]');
+      if (t) t.textContent = done + ' de ' + boxes.length + (done === boxes.length ? ' · listo' : '');
+    });
+  }
+  document.querySelectorAll('input[type=checkbox][data-k]').forEach(function (cb) {
+    cb.checked = !!state[cb.dataset.k];
+    cb.addEventListener('change', function () {
+      state[cb.dataset.k] = cb.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+      tally();
+    });
+  });
+  tally();
+})();
+</script>
